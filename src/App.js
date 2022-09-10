@@ -1,13 +1,19 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { load } from "opentype.js";
-// import Roboto from "./font/BlackHanSans.woff";
-import Roboto from "./font/NanumGothic.woff";
+import font2 from "./font/BlackHanSans.woff";
+import font1 from "./font/NanumGothic.woff";
 import { useEffect, useState } from "react";
 
 function App() {
   const [text, setText] = useState("");
   const [textLen, setTextLen] = useState(0);
+  const [font, setFont] = useState(font1);
+
+  const onChangeHandler = (e) => {
+    console.log(e.currentTarget.value);
+    setFont(e.currentTarget.value);
+  };
 
   const onChange = (e) => {
     setText(e.target.value);
@@ -24,16 +30,18 @@ function App() {
     const ctx = canvas.getContext("2d");
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    console.log("clear canvas");
 
-    load(Roboto, (err, font) => {
+    load(font, (err, font) => {
+      console.log(text);
       if (err) {
         alert("Font could not be loaded: " + err);
       } else {
         const glyphs = font.stringToGlyphs(text);
-        console.log(glyphs);
+        // console.log(glyphs);
         for (let i = 0; i < glyphs.length; i++) {
           // for (let i = 0; i < 1; i++) {
-          console.log(glyphs[i].path.commands);
+          // console.log(glyphs[i].path.commands);
           for (let j = 0; j < glyphs[i].path.commands.length; j++) {
             const command = glyphs[i].path.commands[j];
             draw(ctx, command, i);
@@ -60,7 +68,7 @@ function App() {
 
       // animate();
     });
-  }, [text]);
+  }, [text, font]);
 
   const draw = (ctx, command, order) => {
     console.log("draw ");
@@ -89,6 +97,13 @@ function App() {
     <div className="App">
       <input onChange={onChange} value={text} />
       <button onClick={onReset}>초기화</button>
+      <select onChange={onChangeHandler} value={font}>
+        <option value="" disabled selected>
+          menu
+        </option>
+        <option value={font1}>font1</option>
+        <option value={font2}>font2</option>
+      </select>
       <div>
         <b> 값 : {text}</b>
       </div>
